@@ -4,6 +4,7 @@ import * as puppeteer from 'puppeteer'
 const timeout = seconds => new Promise(resolve => setTimeout(resolve, seconds * 1000))
 
 export type LaunchOptions = puppeteer.LaunchOptions & {
+  args?: []
   metamaskVersion?: string
   metamaskPath?: string
 }
@@ -222,7 +223,7 @@ export async function getMetamask(
       }
       await metamaskPage.reload()
 
-      const confirmButtonSelector = '.signature-request-footer button.button.btn-primary'
+      const confirmButtonSelector = '.request-signature__footer__sign-button'
 
       const button = await metamaskPage.waitForSelector(confirmButtonSelector)
       await button.click()
