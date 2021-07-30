@@ -24,6 +24,7 @@ export type Dappeteer = {
   switchAccount: (accountNumber: number) => Promise<void>
   switchNetwork: (network: string) => Promise<void>
   confirmTransaction: (options: TransactionOptions) => Promise<void>
+  signTransaction: () => Promise<void>
   sign: () => Promise<void>
   approve: (options: ApproveOptions) => Promise<void>
 }
@@ -213,6 +214,21 @@ export async function getMetamask(
         '#app-content > div > div.main-container-wrapper > div > div > div.page-container__footer > footer > button.button.btn-primary.page-container__footer-button'
       const confirmButton = await metamaskPage.waitForSelector(confirmButtonSelector)
       await confirmButton.click()
+      await waitForUnlockedScreen(metamaskPage)
+    },
+
+    signTransaction: async () => {
+      await metamaskPage.bringToFront()
+      if (!signedIn) {
+        throw new Error("You haven't signed in yet")
+      }
+      await metamaskPage.reload()
+
+      const confirmButtonSelector = '.signature-request-footer button.btn-primary'
+
+      const button = await metamaskPage.waitForSelector(confirmButtonSelector)
+      await button.click()
+
       await waitForUnlockedScreen(metamaskPage)
     },
 
