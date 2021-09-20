@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer'
 import * as assert from 'assert'
 
 import * as dappeteer from '../src/index'
-import deploy from './deploy'
+import setupAndDeploy from './utils/setupEnvironment'
 
 function pause(seconds: number): Promise<void> {
   return new Promise(res => setTimeout(res, 1000 * seconds))
@@ -27,7 +27,7 @@ async function clickElement(page, selector) {
 let testContract, browser, metamask, testPage
 
 before(async () => {
-  testContract = await deploy()
+  testContract = await setupAndDeploy()
   browser = await dappeteer.launch(puppeteer)
   metamask = await dappeteer.getMetamask(browser, {
     // optional, else it will use a default seed

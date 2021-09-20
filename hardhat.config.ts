@@ -9,7 +9,7 @@ import { HardhatUserConfig } from 'hardhat/types'
   defaultNetwork: 'localhost',
   solidity: '0.8.6',
   paths: {
-    sources: 'test/src',
+    sources: 'test/contracts',
     deploy: 'test/deploy'
   },
   networks: {

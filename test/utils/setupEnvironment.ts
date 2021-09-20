@@ -9,7 +9,7 @@ import * as path from 'path'
 
 let counterContract = null
 
-const deploy = async () => {
+const setupAndDeploy = async () => {
   await waitForGanache()
   await deployContract()
   await startTestServer()
@@ -39,7 +39,7 @@ const deployContract = async () => {
   const{ abi, address} = await setupHardhat()
   counterContract = new web3.eth.Contract(abi, address)
   fs.writeFileSync(
-    path.join(__dirname, 'server/data.js'),
+    path.join(__dirname, '../server/data.js'),
     `var ContractInfo = ${JSON.stringify({
       abi: abi,
       address
@@ -52,7 +52,7 @@ const startTestServer = async () => {
   console.log('Starting test server...')
   const server = http.createServer((request, response) => {
     return handler(request, response, {
-      public: path.join(__dirname, 'server'),
+      public: path.join(__dirname, '../server'),
       cleanUrls: true
     })
   })
@@ -65,4 +65,4 @@ const startTestServer = async () => {
   })
 }
 
-export default deploy
+export default setupAndDeploy
