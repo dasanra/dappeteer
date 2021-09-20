@@ -1,5 +1,5 @@
 import * as path from 'path'
-import * as puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer'
 
 const timeout = seconds => new Promise(resolve => setTimeout(resolve, seconds * 1000))
 

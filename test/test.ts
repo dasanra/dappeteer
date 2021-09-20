@@ -1,4 +1,4 @@
-import * as puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer'
 import * as assert from 'assert'
 
 import * as dappeteer from '../src/index'

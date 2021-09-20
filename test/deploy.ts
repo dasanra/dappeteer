@@ -1,26 +1,23 @@
-declare let ethereum: any
+import "@nomiclabs/hardhat-web3"
+import ganache  from 'ganache-core'
+import { deployments, web3 } from 'hardhat'
+import handler from 'serve-handler'
 
-const ganache = require('ganache-core')
-
-const rocketh = require('rocketh')
-const Web3 = require('web3')
-const fs = require('fs')
-
-const handler = require('serve-handler')
-const http = require('http')
-const path = require('path')
+import * as fs from 'fs'
+import * as http from 'http'
+import * as path from 'path'
 
 let counterContract = null
 
-async function deploy() {
+const deploy = async () => {
   await waitForGanache()
-  await startTestServer()
   await deployContract()
+  await startTestServer()
 
   return counterContract
 }
 
-async function waitForGanache() {
+const waitForGanache = async () => {
   console.log('Starting ganache...')
   const server = ganache.server({ seed: 'asd123' })
   await new Promise(res => {
@@ -31,29 +28,27 @@ async function waitForGanache() {
   })
 }
 
-async function deployContract() {
+const setupHardhat = deployments.createFixture(async ({ deployments }) => {
+  await deployments.fixture()
+  const Counter = await deployments.get('Counter')
+  return Counter
+})
+
+const deployContract = async () => {
   console.log('Deploying test contract...')
-  const result = await rocketh.launch({
-    nodeUrl: 'http://localhost:8545',
-    silent: true,
-    rootPath: 'test'
-  })
-  const web3 = new Web3(ethereum)
-  const deploymentInfo = result.deployments.Counter
-  const ContractInfo = deploymentInfo.contractInfo
-  const address = deploymentInfo.networks[result.networkId]
-  counterContract = new web3.eth.Contract(ContractInfo.abi, address)
+  const{ abi, address} = await setupHardhat()
+  counterContract = new web3.eth.Contract(abi, address)
   fs.writeFileSync(
     path.join(__dirname, 'server/data.js'),
     `var ContractInfo = ${JSON.stringify({
-      abi: ContractInfo.abi,
+      abi: abi,
       address
     })}`
   )
   console.log('Contract deployed at', address)
 }
 
-async function startTestServer() {
+const startTestServer = async () => {
   console.log('Starting test server...')
   const server = http.createServer((request, response) => {
     return handler(request, response, {
